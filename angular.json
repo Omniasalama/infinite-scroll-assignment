@@ -47,7 +47,7 @@
                 }
               ],
               "outputHashing": "all",
-              "outputMode": "server"
+              "outputMode": "browser"
             },
             "development": {
               "optimization": false,
