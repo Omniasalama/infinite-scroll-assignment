@@ -1,0 +1,315 @@
+<div class="bg-white border-b border-[#8fabd4] py-4 sm:py-6 mb-6 sm:mb-8">
+  <div class="container mx-auto px-4 sm:px-6 max-w-7xl">
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <!-- Left: View Toggle -->
+        <div class="flex items-center gap-4 w-full sm:w-auto">
+          <div
+            class="flex items-center gap-0 border border-[#8fabd4] rounded-lg overflow-hidden shadow-sm"
+          >
+            <button
+              (click)="viewMode.set('grid')"
+              [style.background-color]="viewMode() === 'grid' ? '#4a70a9' : 'transparent'"
+              [style.color]="viewMode() === 'grid' ? 'white' : '#000000'"
+              class="p-2.5 sm:p-3 hover:bg-[#efece3] transition"
+              title="Grid View"
+            >
+              <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                ></path>
+              </svg>
+            </button>
+            <button
+              (click)="viewMode.set('list')"
+              [style.background-color]="viewMode() === 'list' ? '#4a70a9' : 'transparent'"
+              [style.color]="viewMode() === 'list' ? 'white' : '#000000'"
+              class="p-2.5 sm:p-3 hover:bg-[#efece3] transition"
+              title="List View"
+            >
+              <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+            </button>
+          </div>
+          <div class="text-[#000000] text-xs sm:text-sm font-medium ml-auto sm:ml-0">
+            {{ showingRange().total }} results
+          </div>
+        </div>
+
+        <!-- Right: Sort -->
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <span class="text-xs sm:text-sm text-[#000000] whitespace-nowrap">Sort by</span>
+          <select
+            (change)="sortBy.set($any($event.target).value)"
+            [value]="sortBy()"
+            class="flex-1 sm:flex-none border border-[#8fabd4] rounded-lg px-3 py-2 text-xs sm:text-sm focus:ring-2 focus:ring-[#4a70a9] focus:border-[#4a70a9] text-[#000000] bg-white"
+          >
+            <option value="default">Default</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="name-asc">Name: A to Z</option>
+            <option value="name-desc">Name: Z to A</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Search and Price Filter -->
+<div class="container mx-auto px-4 sm:px-6 mb-6 sm:mb-8 max-w-7xl">
+  <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+    <input
+      type="text"
+      placeholder="Search products..."
+      [value]="search()"
+      (input)="search.set($any($event.target).value)"
+      class="flex-1 border border-[#8fabd4] rounded-lg px-4 py-2.5 text-sm sm:text-base focus:ring-2 focus:ring-[#4a70a9] focus:border-[#4a70a9] text-[#000000] placeholder-[#000000] placeholder-opacity-60"
+    />
+
+    <select
+      (change)="filterPrice.set($any($event.target).value)"
+      [value]="filterPrice()"
+      class="w-full sm:w-auto border border-[#8fabd4] rounded-lg px-4 py-2.5 text-sm sm:text-base focus:ring-2 focus:ring-[#4a70a9] focus:border-[#4a70a9] text-[#000000] bg-white"
+    >
+      <option value="all">All Prices</option>
+      <option value="low">Below 5,000 EGP</option>
+      <option value="high">5,000+ EGP</option>
+    </select>
+  </div>
+</div>
+
+<!-- Error State  -->
+@if (error()) {
+<div class="container mx-auto px-6 mb-6 max-w-7xl">
+  <div class="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          fill-rule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+      <div>
+        <p class="text-red-800 font-semibold">Error loading items</p>
+        <p class="text-red-600 text-sm">{{ error() }}</p>
+      </div>
+    </div>
+    <button
+      (click)="retry()"
+      class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold"
+    >
+      Retry
+    </button>
+  </div>
+</div>
+}
+
+<!-- Loading State  -->
+@if (loading() && items().length === 0) {
+<div class="container mx-auto px-6 max-w-7xl">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    @for (i of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]; track i) {
+    <div class="animate-pulse border border-[#8fabd4] rounded-lg p-4 bg-[#efece3]">
+      <div class="h-64 bg-[#8fabd4] bg-opacity-30 rounded mb-4"></div>
+      <div class="h-4 bg-[#8fabd4] bg-opacity-30 rounded w-3/4 mb-2"></div>
+      <div class="h-4 bg-[#8fabd4] bg-opacity-30 rounded w-1/2"></div>
+    </div>
+    }
+  </div>
+</div>
+}
+
+<!-- Products Grid -->
+@if (!loading() || items().length > 0) {
+<div class="container mx-auto px-6 max-w-7xl">
+  @if (viewMode() === 'grid') {
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+    @for (item of sortedItems(); track item.id) {
+    <div
+      class="group relative border border-[#8fabd4] rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 bg-white"
+    >
+      <!-- Product Image  -->
+      <div class="relative overflow-hidden bg-[#efece3]">
+        <img
+          [src]="item.image"
+          [alt]="item.title"
+          class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+
+        <!-- Discount -->
+        @if (item.discount) {
+        <div
+          class="absolute top-4 right-4 bg-[#4a70a9] text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-sm shadow-lg"
+        >
+          -{{ item.discount }}%
+        </div>
+        } @else if (item.isNew) {
+        <div
+          class="absolute top-4 right-4 bg-[#000000] text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-sm shadow-lg"
+        >
+          New
+        </div>
+        }
+
+        <!-- Overlay  -->
+        <div
+          class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100"
+        >
+          <div class="flex flex-col items-center gap-3">
+            <button
+              (click)="addToCart(item)"
+              class="bg-[#4a70a9] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#000000] transition shadow-lg"
+            >
+              Add to cart
+            </button>
+            <div class="flex gap-4 text-white">
+              <button
+                (click)="shareItem(item)"
+                class="flex flex-col items-center gap-1 hover:text-[#8fabd4] transition"
+                title="Share"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"
+                  ></path>
+                </svg>
+                <span class="text-xs">Share</span>
+              </button>
+              <button
+                (click)="compareItem(item)"
+                class="flex flex-col items-center gap-1 hover:text-[#8fabd4] transition"
+                title="Compare"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="text-xs">Compare</span>
+              </button>
+              <button
+                (click)="likeItem(item)"
+                class="flex flex-col items-center gap-1 hover:text-[#8fabd4] transition"
+                title="Like"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="text-xs">Like</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Info -->
+      <div class="p-4">
+        <h3 class="font-semibold text-lg mb-1 text-[#000000]">{{ item.title }}</h3>
+        <p class="text-sm text-[#000000] opacity-70 mb-3">{{ item.subtitle }}</p>
+        <div class="flex items-center gap-2">
+          <span class="text-lg font-bold text-[#000000]">{{ formatPrice(item.price) }}</span>
+          @if (item.originalPrice) {
+          <span class="text-sm text-[#000000] opacity-50 line-through">{{
+            formatPrice(item.originalPrice)
+          }}</span>
+          }
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+  } @else {
+  <div class="space-y-4 mb-8">
+    @for (item of sortedItems(); track item.id) {
+    <div
+      class="flex flex-col sm:flex-row gap-4 border border-[#8fabd4] rounded-lg p-4 hover:shadow-lg transition bg-white"
+    >
+      <img
+        [src]="item.image"
+        [alt]="item.title"
+        class="w-full sm:w-48 h-48 object-cover rounded-lg"
+      />
+      <div class="flex-1 flex flex-col">
+        <h3 class="font-semibold text-xl mb-2 text-[#000000]">{{ item.title }}</h3>
+        <p class="text-[#000000] opacity-70 mb-2">{{ item.subtitle }}</p>
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-xl font-bold text-[#000000]">{{ formatPrice(item.price) }}</span>
+          @if (item.originalPrice) {
+          <span class="text-sm text-[#000000] opacity-50 line-through">{{
+            formatPrice(item.originalPrice)
+          }}</span>
+          }
+        </div>
+        <div class="flex flex-wrap gap-2 mt-auto">
+          <button
+            (click)="addToCart(item)"
+            class="px-4 py-2 bg-[#4a70a9] text-white rounded-lg hover:bg-[#000000] text-sm sm:text-base flex-1 sm:flex-none min-w-[120px]"
+          >
+            Add to cart
+          </button>
+          <button
+            (click)="shareItem(item)"
+            class="px-3 py-2 sm:px-4 border border-[#8fabd4] rounded-lg hover:bg-[#efece3] text-[#000000] text-sm"
+          >
+            Share
+          </button>
+          <button
+            (click)="compareItem(item)"
+            class="px-3 py-2 sm:px-4 border border-[#8fabd4] rounded-lg hover:bg-[#efece3] text-[#000000] text-sm"
+          >
+            Compare
+          </button>
+          <button
+            (click)="likeItem(item)"
+            class="px-3 py-2 sm:px-4 border border-[#8fabd4] rounded-lg hover:bg-[#efece3] text-[#000000] text-sm"
+          >
+            Like
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+  }
+</div>
+}
+
+<!-- Loading More -->
+@if (loading() && items().length > 0) {
+<div class="container mx-auto px-6 mb-8 max-w-7xl">
+  <div class="flex justify-center items-center gap-3 py-8">
+    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4a70a9]"></div>
+    <span class="text-[#000000] font-medium">Loading more items...</span>
+  </div>
+</div>
+}
+
+<!-- End Results -->
+@if (!hasMore() && items().length > 0 && !loading()) {
+<div class="container mx-auto px-6 mb-8 max-w-7xl">
+  <div class="text-center py-8 text-[#000000] opacity-70">
+    <p class="font-medium">You've reached the end of the list</p>
+    <p class="text-sm mt-1">All {{ showingRange().total }} items loaded</p>
+  </div>
+</div>
+}
+
+<!-- Empty State -->
+@if (!loading() && sortedItems().length === 0 && !error()) {
+<div class="container mx-auto px-6 text-center py-12 max-w-7xl">
+  <p class="text-[#000000] opacity-70 text-lg">No products found. Try adjusting your filters.</p>
+</div>
+}

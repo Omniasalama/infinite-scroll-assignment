@@ -1,0 +1,19 @@
+@import "tailwindcss";
+@import "flowbite/src/themes/default";
+@plugin "flowbite/plugin";
+@source "../node_modules/flowbite";
+
+/* Custom Color Palette from Color Hunt */
+:root {
+  --color-cream: #efece3;
+  --color-blue-light: #8fabd4;
+  --color-blue-dark: #4a70a9;
+  --color-black: #000000;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: var(--color-cream);
+}
