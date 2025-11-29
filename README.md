@@ -42,8 +42,4 @@ To run this project locally, follow these steps:
 
 ---
 
-## 🔗 Live Deployment
 
-The application is deployed and available on [Vercel or GitHub Pages, depending on your final choice]:
-
-[**INSERT LIVE DEPLOYMENT URL HERE**]
